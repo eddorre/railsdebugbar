@@ -21,10 +21,11 @@ class RailsDebugBar
 		
 		
 		controller.response.body = body.insert(insertpoint, decorate_parts(parts))
+		controller.response.head.insert('<link href="test" />')
 	end
 	
 	def self.rails_version
-		"Rails: "+Rails::VERSION::STRING
+		"Rails: #{ Rails::VERSION::STRING }"
 	end
 	
 	def self.decorate_parts(parts)
