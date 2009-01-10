@@ -21,7 +21,6 @@ class RailsDebugBar
 		
 		
 		controller.response.body = body.insert(insertpoint, decorate_parts(parts))
-		controller.response.head.insert('<link href="test" />')
 	end
 	
 	def self.rails_version
