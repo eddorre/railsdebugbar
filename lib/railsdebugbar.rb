@@ -4,10 +4,16 @@ class RailsDebugBar
 		return unless content_type =~ /html/
 		
 		body = controller.response.body
+		head = controller.response.body
 		
 		insertpoint = (body =~ /<\/body>/)
-		if insertpoint.nil?
+		head_insert_point = (head =~ /<\/head>/)
+		
+		css_link = "<link href=\"/stylesheets/rails_debug_bar.css\" media=\"screen\" rel=\"stylesheet\" type=\"text/css\" />"
+		
+		if insertpoint.nil? or head_insert_point.nil?
 			insertpoint = -1
+			head_insert_point = -1
 		end
 		
 		parts = ["DEBUG",
@@ -18,9 +24,8 @@ class RailsDebugBar
 			["Response headers"]+ hash_to_array(controller.response.headers)
 		]
 		
-		
-		
 		controller.response.body = body.insert(insertpoint, decorate_parts(parts))
+		controller.response.body = head.insert(head_insert_point, css_link)    
 	end
 	
 	def self.rails_version
@@ -28,38 +33,9 @@ class RailsDebugBar
 	end
 	
 	def self.decorate_parts(parts)
-		css_for_insertion = <<-EOF
-		<style>
-		ul#rails_debug_bar {
-			list-style-type: none;
-			margin-bottom: 0;
-			margin-top: 1em;
-			padding-left: 0
-		}
-		ul#rails_debug_bar li {
-			display: inline-block;
-			padding: 0.2em;
-			border: 1px solid black;
-			background-color: #fda;
-			color: black;
-		}
-		ul#rails_debug_bar li ul {
-			display: none;
-			padding-left: 0px;
-		}
-		ul#rails_debug_bar li:hover ul {
-			display: block;
-			position: absolute;
-			z-index: 2;
-		}
-		ul#rails_debug_bar li ul li {
-			display: block;
-		}
-		</style>
-		EOF
 		parts_for_insertion = array_to_li(parts)
 		html_for_insertion = "<ul id=\"rails_debug_bar\">#{parts_for_insertion}</ul>"
-		return css_for_insertion + html_for_insertion
+		return html_for_insertion
 	end
 	
 	private
